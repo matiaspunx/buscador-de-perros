@@ -1,0 +1,114 @@
+<link rel="import" href="../bower_components/google-map/google-map.html">
+<link rel="import" href="../bower_components/geo-location/geo-location.html">
+<link rel="import" href="bdp-elements.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<dom-module id="bdp-app">
+  <template>
+    <style include="bdp-styles">
+      google-map {
+        height: 100vh;
+      }
+    </style>
+    <firebase-auth
+      id="auth"
+      app-name="bdp"
+      provider="google"
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
+    <firebase-document
+      id="document"
+      app-name="bdp"
+      path="[[editablePerroId]]"
+      data="{{editablePerro}}">
+    </firebase-document>
+    <firebase-query
+      id="query"
+      app-name="bdp"
+      path="/perros/[[user.uid]]"
+      data="{{perros}}">
+    </firebase-query>
+    <app-indexeddb-mirror
+      session="[[user.uid]]"
+      key="perros"
+      data="{{perros}}"
+      persisted-data="{{persistedPerros}}">
+    </app-indexeddb-mirror>
+
+
+    <bdp-toolbar signed-in="[[signedIn]]"
+    on-sign-out="signOut"></bdp-toolbar>
+    <bdp-login on-sign-in="signIn"
+    signed-in="[[signedIn]]"
+    disabled="[[!online]]"></bdp-login>
+
+
+    <geo-location watch-pos high-accuracy latitude="{{latitude}}" longitude="{{longitude}}"></geo-location>
+
+    <google-map api-key="AIzaSyCQiA_BDMvZJ5jn-R1G6t-xSn-WLKQKzLI" latitude="{{latitude}}" longitude="{{longitude}}" disable-zoom="true" min-zoom="12" zoom="16" max-zoom="20" disable-default-ui="true">
+
+      <template is="dom-repeat" items="[[persistedPerros]]" as="perro">
+        <google-map-marker latitude="[[perro.latitud]]" longitude="[[perro.longitud]]"
+            draggable="false" title="[[perro.title]]" icon="src/images/paw.svg">
+              <div>
+                <h1>[[perro.title]]</h1>
+                <img src="[[perro.pic]]" alt="[[perro.title]]" />
+                <p>
+                  Descripción:<br>[[perro.body]]
+                </p>
+                <p>
+                  ¿Dónde se perdio?:<br>[[perro.address]]
+                </p>
+              </div>
+        </google-map-marker>
+      </template>
+
+    </google-map>
+
+    <!-- <div class="perros">
+      <template is="dom-repeat" items="[[persistedPerros]]" as="perro">
+        <bdp-perro
+        id$="[[perro.$key]]"
+        title="[[perro.title]]"
+        body="[[perro.body]]"
+        lat="[[perro.latitud]]"
+        lng="[[perro.longitud]]"
+        pic="[[perro.pic]]"
+        on-tap="edit">
+      </bdp-perro>
+    </template>
+  </div> -->
+
+  <paper-fab
+    icon="add"
+    on-tap="create"
+    disabled="[[!online]]"
+    aria-label="Agregar perro">
+  </paper-fab>
+
+    <bdp-editor
+      id="editor"
+      perro="{{editablePerro}}"
+      on-close="commitChange">
+    </bdp-editor>
+  </template>
+  <script>
+    Polymer({
+      is: 'bdp-app',
+      behaviors: [Polymer.BdpAppBehavior],
+      signIn: function() {
+        this.$.auth.signInWithPopup();
+      },
+      get perrosPath() {
+        return '/perros/' + this.user.uid;
+      },
+      toEditableId: function(perroId) {
+        return this.perrosPath + '/' + perroId;
+      },
+      get isEditable() {
+        return this.online;
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,14 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] CLI Version:  3.0.8
+[debug] Platform:     darwin
+[debug] Node Version: v6.6.0
+[debug] Time:         Fri Oct 28 2016 11:16:37 GMT-0300 (ART)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[info] Starting Firebase development server...
+[info] 
+[info] Project Directory: /Users/mpunx/Desktop/tutoriales/buscador-de-perros
+[info] Public Directory: public
+[info] 
+[info] Server listening at: http://localhost:5000
